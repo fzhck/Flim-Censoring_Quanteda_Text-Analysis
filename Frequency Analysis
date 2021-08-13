@@ -1,4 +1,6 @@
-#Referring to the Example: Chinese text analysis, by Haiyuan Wang, Quanteda 3.0
+#Referring to the Example: Chinese text analysis, by Haiyuan Wang, Quanteda 3.0: https://quanteda.io/articles/pkgdown/examples/chinese.html
+#https://github.com/quanteda/quanteda/blob/2bb1054f8a2eb2cc2639a68f32b2fc59adcc8684/vignettes/pkgdown/examples/chinese.Rmd 
+
 library(quanteda)
 
 #downloading corpus
@@ -6,7 +8,7 @@ library(quanteda)
 devtools::install_github("quanteda/quanteda.corpora")
 library(quanteda.corpora)
 corp <- quanteda.corpora::download(url = "https://github.com/fzhck/Flim-Censoring_Quanteda_Text-Analysis/blob/main/Summary_text.txt")
-#(problem: unkonwn input format)
+#(problem: unkonwn input format, example file type is ".rds", mine is ".txt")
 
 #tokenization
 # Chinese stopwords
@@ -27,3 +29,32 @@ set.seed(100)
 library("quanteda.textplots")
 textplot_wordcloud(ch_dfm, random_order = FALSE,
                    ratation = 0.25, )
+
+--------------------------------------
+# file: Summary_text.csv
+#After "Import Dataset: From Text(readr)"
+View(Summary_text)
+
+# Chinese Stopwords
+ch_stop <- stopwords("zh", source = "misc")
+
+#tokenize
+ch_toks <- c(Summary_text) %>%
+  tokens(remove_punct = TRUE) %>%
+  tokens_remove(pattern = ch_stop)
+
+#construct a dfm
+ch_dfm <- dfm(ch_toks)
+topfeatures(ch_dfm)
+
+#plot a word cloud
+set.seed(100)
+library("quanteda.textplots")
+textplot_wordcloud(ch_dfm)
+
+#Error in wordcloud(x, min_size, max_size, min_count, max_words, color,  : 
+#No features left after trimming with min_count = 3
+# I think that maybe it is because of the tokenization which take each sentence as a whole rather than separated word.
+
+------------------------------------------
+
