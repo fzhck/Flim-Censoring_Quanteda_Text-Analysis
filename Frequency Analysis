@@ -1,0 +1,29 @@
+#Referring to the Example: Chinese text analysis, by Haiyuan Wang, Quanteda 3.0
+library(quanteda)
+
+#downloading corpus
+#read text files
+devtools::install_github("quanteda/quanteda.corpora")
+library(quanteda.corpora)
+corp <- quanteda.corpora::download(url = "https://github.com/fzhck/Flim-Censoring_Quanteda_Text-Analysis/blob/main/Summary_text.txt")
+#(problem: unkonwn input format)
+
+#tokenization
+# Chinese stopwords
+ch_stop <- stopwords("zh", source = "misc")
+
+# tokenize
+ch_toks <- corp %>% 
+  tokens(remove_punct = TRUE) %>%
+  tokens_remove(pattern = ch_stop)
+
+# construct a dfm
+ch_dfm <- dfm(ch_toks)
+topfeatures(ch_dfm)
+
+#analysis
+#wordcloud
+set.seed(100)
+library("quanteda.textplots")
+textplot_wordcloud(ch_dfm, random_order = FALSE,
+                   ratation = 0.25, )
