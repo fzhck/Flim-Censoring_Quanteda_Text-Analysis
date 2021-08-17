@@ -1,0 +1,42 @@
+library(quanteda)
+library(corpus)
+
+#read text files
+devtools::install_github("quanteda/quanteda.corpora", force = TRUE)
+library(quanteda.corpora)
+
+corp <- read.csv("Summary_text", encoding="UTF-8") #problems
+corp <- c(Summary_text) #this one works
+corp <- corpus(corp$Summary)
+
+corp <- c(Censored_Summary) #separated file for the censored
+corp <- corpus(corp$Summary)
+
+corp <- c(Uncensored_Summary) #separated file for the Uncensored
+corp <- corpus(corp$Summary)
+#Error: corpus() only works on character, corpus, Corpus, data.frame, kwic objects.
+
+#Chinese stopwords
+ch_stop <- stopwords("zh", source = "misc")
+
+# tokenize
+ch_toks <- corp %>%
+  tokens(remove_punct = TRUE) %>%
+  tokens_remove(pattern = ch_stop, min_nchar = 2)
+
+# construct a dfm
+ch_dfm <- dfm(ch_toks)
+topfeatures(ch_dfm, n = 50)
+
+#analysis
+#wordcloud
+set.seed(100)
+library("quanteda.textplots")
+textplot_wordcloud(ch_dfm, rotation=0, min_size=0.5, max_size=4, max_words=200,
+                   font = if (Sys.info()['sysname'] == "Darwin") "SimHei" else NULL,
+                   color = RColorBrewer::brewer.pal(8, "Dark2"))
+
+#collocations
+library("quanteda.textstats")
+ch_col <- textstat_collocations(ch_toks, size = 2, min_count = 20)
+knitr::kable(head(ch_col, 100))
